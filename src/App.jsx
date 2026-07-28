@@ -4,6 +4,7 @@ import { Trophy, Users, CalendarDays, Settings, Play, Plus, Trash2, Crown, Check
 export default function App() {
   const [activeTab, setActiveTab] = useState('setup');
   
+  // Estado de la aplicación
   const [numCourts, setNumCourts] = useState(4);
   const [teams, setTeams] = useState([
     { id: 1, p1: 'Roy', p2: 'Sergio' },
@@ -18,6 +19,7 @@ export default function App() {
   const [rounds, setRounds] = useState([]);
   const [tournamentStarted, setTournamentStarted] = useState(false);
 
+  // Funciones de Configuración
   const addTeam = () => {
     const newId = teams.length > 0 ? Math.max(...teams.map(t => t.id)) + 1 : 1;
     setTeams([...teams, { id: newId, p1: '', p2: '' }]);
@@ -31,6 +33,7 @@ export default function App() {
     setTeams(teams.map(t => t.id === id ? { ...t, [field]: value } : t));
   };
 
+  // Algoritmo Round Robin
   const generateTournament = () => {
     const validTeams = teams.filter(t => t.p1.trim() !== '' || t.p2.trim() !== '');
     if (validTeams.length < 2) {
@@ -86,6 +89,7 @@ export default function App() {
     }
   };
 
+  // Funciones de Partidos
   const updateScore = (roundIndex, matchIndex, teamNum, value) => {
     const newRounds = [...rounds];
     newRounds[roundIndex][matchIndex][`score${teamNum}`] = value;
@@ -99,6 +103,7 @@ export default function App() {
     setRounds(newRounds);
   };
 
+  // Cálculo de Clasificaciones
   const getStandings = () => {
     const stats = {};
     
@@ -140,6 +145,7 @@ export default function App() {
 
     const statsArray = Object.values(stats);
 
+    // Ordenar por Victorias
     const byWins = [...statsArray].sort((a, b) => {
       if (b.wins !== a.wins) return b.wins - a.wins;
       if (b.draws !== a.draws) return b.draws - a.draws;
@@ -148,6 +154,7 @@ export default function App() {
       return diffB - diffA;
     });
 
+    // Ordenar por Puntos Acumulados
     const byPoints = [...statsArray].sort((a, b) => {
       if (b.scoreFor !== a.scoreFor) return b.scoreFor - a.scoreFor;
       const diffB = b.scoreFor - b.scoreAgainst;
@@ -257,19 +264,28 @@ export default function App() {
                   </h3>
                 </div>
                 
+                {/* GRID RESPONSIVO AMPLIADO (Hasta 4 canchas o más) */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
                   {round.map((match, mIndex) => (
+                    
+                    // Diseño Visual de la Cancha (Horizontal)
                     <div key={match.id} className="relative w-full h-48 bg-gray-800 rounded-2xl shadow-2xl border-4 border-gray-700 overflow-hidden flex transition-all duration-300">
+                      
+                      {/* Líneas de la Cancha */}
                       <div className="absolute inset-2 border-2 border-yellow-500/30 pointer-events-none rounded"></div>
                       <div className="absolute top-2 bottom-2 left-1/2 w-0 border-l-2 border-dashed border-yellow-500/40 -translate-x-1/2 pointer-events-none"></div>
+                      
+                      {/* Cuadros de saque */}
                       <div className="absolute top-2 bottom-2 left-1/4 w-[1px] bg-yellow-500/10 pointer-events-none"></div>
                       <div className="absolute top-2 bottom-2 right-1/4 w-[1px] bg-yellow-500/10 pointer-events-none"></div>
                       <div className="absolute top-1/2 left-2 right-2 h-[1px] bg-yellow-500/10 -translate-y-1/2 pointer-events-none"></div>
 
+                      {/* Etiqueta de la Cancha */}
                       <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-gray-900 text-yellow-500 text-[10px] sm:text-xs font-black px-3 sm:px-4 py-1 rounded-b-lg border-b border-x border-gray-700 z-20 shadow-md whitespace-nowrap">
                         CANCHA {match.court}
                       </div>
 
+                      {/* Equipo 1 (Izquierda) */}
                       <div className="flex-1 flex flex-col items-center justify-center relative z-10 p-2 pt-6">
                         <div className="text-center mb-2">
                           <p className={`font-bold text-sm sm:text-base leading-tight truncate w-full px-1 ${match.finished && match.score1 > match.score2 ? 'text-yellow-400' : 'text-gray-200'}`}>{match.team1.p1}</p>
@@ -288,6 +304,7 @@ export default function App() {
                         )}
                       </div>
 
+                      {/* Equipo 2 (Derecha) */}
                       <div className="flex-1 flex flex-col items-center justify-center relative z-10 p-2 pt-6">
                         <div className="text-center mb-2">
                           <p className={`font-bold text-sm sm:text-base leading-tight truncate w-full px-1 ${match.finished && match.score2 > match.score1 ? 'text-yellow-400' : 'text-gray-200'}`}>{match.team2.p1}</p>
@@ -306,6 +323,7 @@ export default function App() {
                         )}
                       </div>
 
+                      {/* Botón Central */}
                       <button 
                         onClick={() => toggleMatchStatus(rIndex, mIndex)}
                         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-10 sm:w-12 h-10 sm:h-12 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(0,0,0,0.5)] border-[3px] sm:border-4 transition-all duration-300 ${
@@ -316,6 +334,7 @@ export default function App() {
                       >
                         {match.finished ? <Unlock className="w-4 h-4 sm:w-5 sm:h-5" /> : <Check className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" />}
                       </button>
+
                     </div>
                   ))}
                 </div>
@@ -329,6 +348,8 @@ export default function App() {
         return (
           <div className="max-w-7xl mx-auto animate-fade-in pb-24 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              
+              {/* Tabla 1: Por Partidos Ganados */}
               <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden h-fit flex flex-col">
                 <div className="bg-yellow-500 py-3 px-5 flex items-center justify-between border-b-2 border-yellow-600 shrink-0">
                   <h2 className="text-lg font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
@@ -341,10 +362,10 @@ export default function App() {
                       <tr className="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider">
                         <th className="p-3 font-semibold text-center w-12">Pos</th>
                         <th className="p-3 font-semibold min-w-[140px]">Pareja</th>
-                        <th className="p-3 font-semibold text-center">PJ</th>
-                        <th className="p-3 font-semibold text-center text-green-400">G</th>
-                        <th className="p-3 font-semibold text-center text-gray-400">E</th>
-                        <th className="p-3 font-semibold text-center text-red-400">P</th>
+                        <th className="p-3 font-semibold text-center" title="Partidos Jugados">PJ</th>
+                        <th className="p-3 font-semibold text-center text-green-400" title="Ganados">G</th>
+                        <th className="p-3 font-semibold text-center text-gray-400" title="Empatados">E</th>
+                        <th className="p-3 font-semibold text-center text-red-400" title="Perdidos">P</th>
                       </tr>
                     </thead>
                     <tbody className="text-sm">
@@ -367,6 +388,7 @@ export default function App() {
                 </div>
               </div>
 
+              {/* Tabla 2: Por Puntos Acumulados */}
               <div className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden h-fit flex flex-col">
                 <div className="bg-gray-300 py-3 px-5 flex items-center justify-between border-b-2 border-gray-400 shrink-0">
                   <h2 className="text-lg font-black text-gray-900 uppercase tracking-widest flex items-center gap-2">
@@ -379,10 +401,10 @@ export default function App() {
                       <tr className="bg-gray-900 text-gray-400 text-xs uppercase tracking-wider">
                         <th className="p-3 font-semibold text-center w-12">Pos</th>
                         <th className="p-3 font-semibold min-w-[140px]">Pareja</th>
-                        <th className="p-3 font-semibold text-center">PJ</th>
-                        <th className="p-3 font-semibold text-center text-blue-400">PF</th>
-                        <th className="p-3 font-semibold text-center text-orange-400">PC</th>
-                        <th className="p-3 font-semibold text-center text-white">DIF</th>
+                        <th className="p-3 font-semibold text-center" title="Partidos Jugados">PJ</th>
+                        <th className="p-3 font-semibold text-center text-blue-400" title="Puntos a Favor">PF</th>
+                        <th className="p-3 font-semibold text-center text-orange-400" title="Puntos en Contra">PC</th>
+                        <th className="p-3 font-semibold text-center text-white" title="Diferencia de Puntos">DIF</th>
                       </tr>
                     </thead>
                     <tbody className="text-sm">
@@ -404,6 +426,7 @@ export default function App() {
                   </table>
                 </div>
               </div>
+
             </div>
           </div>
         );
@@ -414,6 +437,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-900 font-sans text-gray-100 selection:bg-yellow-500 selection:text-gray-900">
+      
+      {/* Cabecera expandida a todo lo ancho para coincidir con las canchas */}
       <header className="bg-gray-950 border-b border-gray-800 sticky top-0 z-40">
         <div className="w-full max-w-[1920px] mx-auto px-4 py-4 flex justify-center items-center">
           <div className="text-center">
@@ -425,10 +450,12 @@ export default function App() {
         </div>
       </header>
 
+      {/* Contenedor Principal (w-full para ocupar toda la pantalla) */}
       <main className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {renderTabContent()}
       </main>
 
+      {/* Navegación Móvil Inferior */}
       <nav className="fixed bottom-0 w-full bg-gray-950 border-t border-gray-800 z-50 pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
         <div className="max-w-md mx-auto flex justify-around p-2">
           <button onClick={() => setActiveTab('setup')} className={`flex flex-col items-center p-2 rounded-xl w-24 transition-colors ${activeTab === 'setup' ? 'text-yellow-500 bg-gray-900' : 'text-gray-500 hover:text-gray-300'}`}>
@@ -445,7 +472,18 @@ export default function App() {
           </button>
         </div>
       </nav>
+
+      {/* Estilos Extra */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(15px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 1rem); }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+      `}} />
     </div>
   );
 }
-
